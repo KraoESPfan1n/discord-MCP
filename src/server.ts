@@ -29,7 +29,7 @@ if (token) {
   client.once('ready', () => {
     console.log(`Logged in as ${client?.user?.tag}`);
   });
-  client.login(token).catch((err) => {
+  client.login(token).catch((err: Error) => {
     console.error('Failed to login to Discord', err);
   });
 } else {
@@ -166,7 +166,7 @@ async function listRoles(params: { guildId?: string }) {
   const guild = await resolveGuild(params.guildId);
   await guild.members.fetch();
   const roles = await guild.roles.fetch();
-  return roles.map((r) => ({ id: r.id, name: r.name, members: r.members.size }));
+  return roles.map((r: any) => ({ id: r.id, name: r.name, members: r.members.size }));
 }
 
 // Webhook helper
@@ -293,7 +293,7 @@ app.get('/guilds', async (_req, res) => {
   try {
     if (!client) throw new Error('Discord client not configured');
     const guilds = await client.guilds.fetch();
-    const result = guilds.map((g) => ({ id: g.id, name: g.name }));
+    const result = guilds.map((g: any) => ({ id: g.id, name: g.name }));
     res.json(result);
   } catch (err: any) {
     console.error(err);
