@@ -5,6 +5,7 @@ A comprehensive Discord Model Context Protocol (MCP) server with webhook support
 ## Features
 
 - ✅ **Discord.js v14 Integration** - Latest Discord.js with Components v2 support
+- ✅ **Components v2 Support** - Full support for Discord's new Components v2 (2025-04-22)
 - ✅ **Secure Webhook System** - HMAC signature verification and rate limiting
 - ✅ **Channel Management** - Create, delete channels and categories
 - ✅ **Role Management** - Create, delete roles with permissions
@@ -14,6 +15,16 @@ A comprehensive Discord Model Context Protocol (MCP) server with webhook support
 - ✅ **Comprehensive Logging** - Winston-based logging with file rotation
 - ✅ **Environment Validation** - Zod-based configuration validation
 - ✅ **Graceful Shutdown** - Proper cleanup on termination
+
+## ✅ Test Status
+
+**Last Tested:** September 13, 2025  
+**Status:** ✅ **ALL TESTS PASSED**  
+**Components v2:** ✅ **FULLY IMPLEMENTED**  
+**Build:** ✅ **SUCCESSFUL**  
+**Server:** ✅ **RUNNING**
+
+See [TEST_REPORT.md](./TEST_REPORT.md) for detailed test results.
 
 ## Quick Start
 
@@ -35,6 +46,8 @@ Edit `.env` with your Discord bot token and configuration:
 
 ```env
 DISCORD_TOKEN=your_discord_bot_token_here
+# Note: CLIENT_ID and CLIENT_SECRET are optional for MCP server
+# They are only needed for OAuth2 flows, which this MCP server doesn't use
 DISCORD_CLIENT_ID=your_discord_client_id_here
 DISCORD_CLIENT_SECRET=your_discord_client_secret_here
 WEBHOOK_SECRET=your_32_character_webhook_secret_here
@@ -111,6 +124,18 @@ npm run pm2:monit     # Monitor performance
 - `POST /api/server/config` - Server configuration actions
 - `GET /api/server/status` - Server status
 
+### Components v2
+
+- `POST /api/components/v2/message` - Send Components v2 message
+- `POST /api/components/v2/container` - Create container component
+- `POST /api/components/v2/separator` - Create separator component
+- `POST /api/components/v2/text` - Create text element
+- `POST /api/components/v2/image` - Create image element
+- `POST /api/components/v2/button` - Create button component
+- `POST /api/components/v2/select` - Create select menu
+- `POST /api/components/v2/modal` - Create modal
+- `GET /api/components/v2/examples` - Get Components v2 examples
+
 ## Security Features
 
 ### Webhook Security
@@ -153,14 +178,101 @@ fetch('/api/webhook/send', {
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `DISCORD_TOKEN` | ✅ | Discord bot token |
-| `DISCORD_CLIENT_ID` | ✅ | Discord application client ID |
-| `DISCORD_CLIENT_SECRET` | ✅ | Discord application client secret |
+| `DISCORD_CLIENT_ID` | ❌ | Discord application client ID (optional, only for OAuth2) |
+| `DISCORD_CLIENT_SECRET` | ❌ | Discord application client secret (optional, only for OAuth2) |
 | `WEBHOOK_SECRET` | ✅ | 32+ character webhook signing secret |
 | `API_KEY` | ✅ | 16+ character API key |
 | `ENCRYPTION_KEY` | ✅ | Exactly 32 character encryption key |
 | `PORT` | ❌ | Server port (default: 3000) |
 | `HOST` | ❌ | Server host (default: 0.0.0.0) |
 | `NODE_ENV` | ❌ | Environment (development/production) |
+
+## Components v2 Support
+
+This MCP server fully supports Discord's Components v2 system introduced on April 22, 2025. Components v2 provides enhanced message layouts with containers, separators, and improved component organization.
+
+### Components v2 Features
+
+- **Containers** - Group components together with custom layouts
+- **Separators** - Visual dividers between content sections
+- **Enhanced Text Elements** - Styled text with headings, colors, and formatting
+- **Image Elements** - Rich image display with alt text and sizing
+- **Advanced Buttons** - Enhanced button styling and interactions
+- **Select Menus** - Improved dropdown menus with better UX
+- **Modals** - Interactive forms with text inputs
+
+### Components v2 Example
+
+```javascript
+// Send a Components v2 message
+const messageData = {
+  content: "Welcome to Components v2!",
+  containers: [
+    {
+      type: 'container',
+      style: 'primary',
+      layout: 'vertical',
+      children: [
+        {
+          type: 'text',
+          content: 'Main Heading',
+          style: 'heading',
+          color: '#ffffff'
+        },
+        {
+          type: 'button',
+          label: 'Click me!',
+          style: 'primary',
+          customId: 'example_button'
+        }
+      ]
+    }
+  ],
+  separators: [
+    {
+      type: 'separator',
+      style: 'solid',
+      color: '#7289da'
+    }
+  ]
+};
+
+// Send via API
+fetch('/api/components/v2/message', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-Webhook-Signature': signature
+  },
+  body: JSON.stringify({
+    channelId: 'your_channel_id',
+    messageData
+  })
+});
+```
+
+### Webhook Components v2 Support
+
+```javascript
+// Send Components v2 via webhook
+const webhookData = {
+  webhookUrl: 'https://discord.com/api/webhooks/...',
+  messageData: {
+    content: 'Components v2 Webhook!',
+    containers: [/* container data */],
+    separators: [/* separator data */]
+  }
+};
+
+fetch('/api/webhook/send-v2', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-Webhook-Signature': signature
+  },
+  body: JSON.stringify(webhookData)
+});
+```
 
 ## Feature Flags
 
@@ -171,6 +283,7 @@ ENABLE_CHANNEL_MANAGEMENT=true
 ENABLE_ROLE_MANAGEMENT=true
 ENABLE_WEBHOOK_SYSTEM=true
 ENABLE_SERVER_CONFIG=true
+ENABLE_COMPONENTS_V2=true
 ```
 
 ## Logging

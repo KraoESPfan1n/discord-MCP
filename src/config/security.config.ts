@@ -105,13 +105,8 @@ export const validateSecurityRequirements = (): { valid: boolean; errors: string
     errors.push('Discord token is required');
   }
   
-  if (!env.DISCORD_CLIENT_ID) {
-    errors.push('Discord client ID is required');
-  }
-  
-  if (!env.DISCORD_CLIENT_SECRET) {
-    errors.push('Discord client secret is required');
-  }
+  // Note: DISCORD_CLIENT_ID and DISCORD_CLIENT_SECRET are optional for MCP server
+  // They are only needed for OAuth2 flows, which this MCP server doesn't use
   
   // Production-specific checks
   if (env.NODE_ENV === 'production') {

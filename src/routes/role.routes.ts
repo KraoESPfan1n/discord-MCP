@@ -23,7 +23,7 @@ const verifySignature = (req: Request, res: Response, next: any) => {
     return res.status(401).json({ error: 'Invalid webhook signature' });
   }
 
-  next();
+  return next();
 };
 
 // Middleware for rate limiting
@@ -38,7 +38,7 @@ const rateLimitMiddleware = (req: Request, res: Response, next: any) => {
   }
 
   res.set('X-RateLimit-Remaining', rateLimiter.getRemainingRequests(clientId).toString());
-  next();
+  return next();
 };
 
 // POST /roles/create
@@ -55,7 +55,7 @@ router.post('/create', rateLimitMiddleware, verifySignature, async (req: Request
     }
 
     // Parse color if provided
-    let roleColor = Colors.Blurple;
+    let roleColor: number = Colors.Blurple;
     if (color) {
       if (typeof color === 'string') {
         // Handle hex color
@@ -63,7 +63,7 @@ router.post('/create', rateLimitMiddleware, verifySignature, async (req: Request
           roleColor = parseInt(color.slice(1), 16);
         } else {
           // Handle color names
-          roleColor = Colors[color as keyof typeof Colors] || Colors.Blurple;
+          roleColor = (Colors[color as keyof typeof Colors] as number) || Colors.Blurple;
         }
       } else if (typeof color === 'number') {
         roleColor = color;
@@ -90,7 +90,7 @@ router.post('/create', rateLimitMiddleware, verifySignature, async (req: Request
     });
 
     logger.info(`Role created: ${role.name} in guild ${guildId}`);
-    res.json({ 
+    return res.json({ 
       success: true, 
       role: {
         id: role.id,
@@ -105,7 +105,7 @@ router.post('/create', rateLimitMiddleware, verifySignature, async (req: Request
 
   } catch (error) {
     logger.error('Role creation error:', error);
-    res.status(500).json({ error: 'Failed to create role' });
+    return res.status(500).json({ error: 'Failed to create role' });
   }
 });
 
@@ -127,11 +127,11 @@ router.delete('/:roleId', rateLimitMiddleware, verifySignature, async (req: Requ
     await discordService.deleteRole(guildId, roleId);
 
     logger.info(`Role deleted: ${roleId} from guild ${guildId}`);
-    res.json({ success: true, message: 'Role deleted successfully' });
+    return res.json({ success: true, message: 'Role deleted successfully' });
 
   } catch (error) {
     logger.error('Role deletion error:', error);
-    res.status(500).json({ error: 'Failed to delete role' });
+    return res.status(500).json({ error: 'Failed to delete role' });
   }
 });
 
@@ -147,7 +147,7 @@ router.get('/guild/:guildId', rateLimitMiddleware, verifySignature, async (req: 
     const discordService = new DiscordService();
     const guildInfo = await discordService.getGuildInfo(guildId);
 
-    res.json({ 
+    return res.json({ 
       success: true, 
       guild: {
         id: guildInfo.id,
@@ -158,7 +158,7 @@ router.get('/guild/:guildId', rateLimitMiddleware, verifySignature, async (req: 
 
   } catch (error) {
     logger.error('Guild roles fetch error:', error);
-    res.status(500).json({ error: 'Failed to fetch guild roles' });
+    return res.status(500).json({ error: 'Failed to fetch guild roles' });
   }
 });
 
@@ -191,7 +191,7 @@ router.post('/bulk-create', rateLimitMiddleware, verifySignature, async (req: Re
           continue;
         }
 
-        let roleColor = Colors.Blurple;
+        let roleColor: number = Colors.Blurple;
         if (color) {
           if (typeof color === 'string' && color.startsWith('#')) {
             roleColor = parseInt(color.slice(1), 16);
@@ -228,7 +228,7 @@ router.post('/bulk-create', rateLimitMiddleware, verifySignature, async (req: Re
       }
     }
 
-    res.json({ 
+    return res.json({ 
       success: true, 
       message: `Created ${createdRoles.length} roles`,
       roles: createdRoles
@@ -236,7 +236,7 @@ router.post('/bulk-create', rateLimitMiddleware, verifySignature, async (req: Re
 
   } catch (error) {
     logger.error('Bulk role creation error:', error);
-    res.status(500).json({ error: 'Failed to create roles' });
+    return res.status(500).json({ error: 'Failed to create roles' });
   }
 });
 

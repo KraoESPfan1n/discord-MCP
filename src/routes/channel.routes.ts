@@ -23,7 +23,7 @@ const verifySignature = (req: Request, res: Response, next: any) => {
     return res.status(401).json({ error: 'Invalid webhook signature' });
   }
 
-  next();
+  return next();
 };
 
 // Middleware for rate limiting
@@ -38,7 +38,7 @@ const rateLimitMiddleware = (req: Request, res: Response, next: any) => {
   }
 
   res.set('X-RateLimit-Remaining', rateLimiter.getRemainingRequests(clientId).toString());
-  next();
+  return next();
 };
 
 // POST /channels/create
@@ -59,29 +59,34 @@ router.post('/create', rateLimitMiddleware, verifySignature, async (req: Request
     const channelType = type && validTypes.includes(type) ? type : ChannelType.GuildText;
 
     const discordService = new DiscordService();
-    const channel = await discordService.createChannel(guildId, {
+    const channelData: any = {
       name: sanitizeInput(name),
       type: channelType,
       parentId,
-      topic: topic ? sanitizeInput(topic) : undefined,
       permissionOverwrites
-    });
+    };
+    
+    if (topic) {
+      channelData.topic = sanitizeInput(topic);
+    }
+    
+    const channel = await discordService.createChannel(guildId, channelData);
 
-    logger.info(`Channel created: ${channel.name} in guild ${guildId}`);
-    res.json({ 
+    logger.info(`Channel created: ${'name' in channel ? channel.name : 'Unknown'} in guild ${guildId}`);
+    return res.json({ 
       success: true, 
       channel: {
         id: channel.id,
-        name: channel.name,
+        name: 'name' in channel ? channel.name : 'Unknown',
         type: channel.type,
-        guildId: channel.guildId,
-        parentId: channel.parentId
+        guildId: 'guildId' in channel ? channel.guildId : null,
+        parentId: 'parentId' in channel ? channel.parentId : null
       }
     });
 
   } catch (error) {
     logger.error('Channel creation error:', error);
-    res.status(500).json({ error: 'Failed to create channel' });
+    return res.status(500).json({ error: 'Failed to create channel' });
   }
 });
 
@@ -105,7 +110,7 @@ router.post('/category/create', rateLimitMiddleware, verifySignature, async (req
     });
 
     logger.info(`Category created: ${category.name} in guild ${guildId}`);
-    res.json({ 
+    return res.json({ 
       success: true, 
       category: {
         id: category.id,
@@ -117,7 +122,7 @@ router.post('/category/create', rateLimitMiddleware, verifySignature, async (req
 
   } catch (error) {
     logger.error('Category creation error:', error);
-    res.status(500).json({ error: 'Failed to create category' });
+    return res.status(500).json({ error: 'Failed to create category' });
   }
 });
 
@@ -138,11 +143,11 @@ router.delete('/:channelId', rateLimitMiddleware, verifySignature, async (req: R
     await discordService.deleteChannel(channelId);
 
     logger.info(`Channel deleted: ${channelId}`);
-    res.json({ success: true, message: 'Channel deleted successfully' });
+    return res.json({ success: true, message: 'Channel deleted successfully' });
 
   } catch (error) {
     logger.error('Channel deletion error:', error);
-    res.status(500).json({ error: 'Failed to delete channel' });
+    return res.status(500).json({ error: 'Failed to delete channel' });
   }
 });
 
@@ -158,7 +163,7 @@ router.get('/guild/:guildId', rateLimitMiddleware, verifySignature, async (req: 
     const discordService = new DiscordService();
     const guildInfo = await discordService.getGuildInfo(guildId);
 
-    res.json({ 
+    return res.json({ 
       success: true, 
       guild: {
         id: guildInfo.id,
@@ -169,7 +174,7 @@ router.get('/guild/:guildId', rateLimitMiddleware, verifySignature, async (req: 
 
   } catch (error) {
     logger.error('Guild channels fetch error:', error);
-    res.status(500).json({ error: 'Failed to fetch guild channels' });
+    return res.status(500).json({ error: 'Failed to fetch guild channels' });
   }
 });
 
@@ -189,11 +194,11 @@ router.get('/:channelId', rateLimitMiddleware, verifySignature, async (req: Requ
       return res.status(404).json({ error: 'Channel not found' });
     }
 
-    res.json({ 
+    return res.json({ 
       success: true, 
       channel: {
         id: channel.id,
-        name: channel.name,
+        name: 'name' in channel ? channel.name : 'Unknown',
         type: channel.type,
         guildId: 'guildId' in channel ? channel.guildId : null
       }
@@ -201,7 +206,7 @@ router.get('/:channelId', rateLimitMiddleware, verifySignature, async (req: Requ
 
   } catch (error) {
     logger.error('Channel fetch error:', error);
-    res.status(500).json({ error: 'Failed to fetch channel' });
+    return res.status(500).json({ error: 'Failed to fetch channel' });
   }
 });
 

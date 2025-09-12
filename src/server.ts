@@ -27,6 +27,7 @@ import webhookRoutes from './routes/webhook.routes';
 import channelRoutes from './routes/channel.routes';
 import roleRoutes from './routes/role.routes';
 import serverRoutes from './routes/server.routes';
+import componentsRoutes from './routes/components.routes';
 
 // Validate security requirements before starting
 const securityValidation = validateSecurityRequirements();
@@ -138,7 +139,8 @@ app.get('/api/status',
         webhooks: env.ENABLE_WEBHOOK_SYSTEM,
         channels: env.ENABLE_CHANNEL_MANAGEMENT,
         roles: env.ENABLE_ROLE_MANAGEMENT,
-        serverConfig: env.ENABLE_SERVER_CONFIG
+        serverConfig: env.ENABLE_SERVER_CONFIG,
+        componentsV2: env.ENABLE_COMPONENTS_V2
       },
       security: {
         level: env.NODE_ENV,
@@ -175,6 +177,11 @@ app.use('/api/server',
   serverRoutes
 );
 
+app.use('/api/components', 
+  endpointRateLimit('/api/components/v2/message', 60000, 20), // 20 requests per minute for Components v2
+  componentsRoutes
+);
+
 // Root endpoint
 app.get('/', (req, res) => {
   res.json({
@@ -187,7 +194,8 @@ app.get('/', (req, res) => {
       webhooks: '/api/webhook',
       channels: '/api/channels',
       roles: '/api/roles',
-      server: '/api/server'
+      server: '/api/server',
+      components: '/api/components'
     }
   });
 });
@@ -255,7 +263,8 @@ const server = app.listen(env.PORT, env.HOST, async () => {
     webhooks: env.ENABLE_WEBHOOK_SYSTEM,
     channels: env.ENABLE_CHANNEL_MANAGEMENT,
     roles: env.ENABLE_ROLE_MANAGEMENT,
-    serverConfig: env.ENABLE_SERVER_CONFIG
+    serverConfig: env.ENABLE_SERVER_CONFIG,
+    componentsV2: env.ENABLE_COMPONENTS_V2
   });
 
   try {

@@ -22,7 +22,7 @@ const verifySignature = (req: Request, res: Response, next: any) => {
     return res.status(401).json({ error: 'Invalid webhook signature' });
   }
 
-  next();
+  return next();
 };
 
 // Middleware for rate limiting
@@ -37,7 +37,7 @@ const rateLimitMiddleware = (req: Request, res: Response, next: any) => {
   }
 
   res.set('X-RateLimit-Remaining', rateLimiter.getRemainingRequests(clientId).toString());
-  next();
+  return next();
 };
 
 // POST /webhook/send
@@ -70,11 +70,11 @@ router.post('/send', rateLimitMiddleware, verifySignature, async (req: Request, 
     await discordService.sendWebhookMessage(webhookUrl, sanitizedMessage);
 
     logger.info(`Webhook message sent to ${webhookUrl}`);
-    res.json({ success: true, message: 'Webhook sent successfully' });
+    return res.json({ success: true, message: 'Webhook sent successfully' });
 
   } catch (error) {
     logger.error('Webhook send error:', error);
-    res.status(500).json({ error: 'Failed to send webhook' });
+    return res.status(500).json({ error: 'Failed to send webhook' });
   }
 });
 
@@ -94,7 +94,7 @@ router.post('/create', rateLimitMiddleware, verifySignature, async (req: Request
     });
 
     logger.info(`Webhook created: ${webhook.name} in channel ${channelId}`);
-    res.json({ 
+    return res.json({ 
       success: true, 
       webhook: {
         id: webhook.id,
@@ -106,17 +106,115 @@ router.post('/create', rateLimitMiddleware, verifySignature, async (req: Request
 
   } catch (error) {
     logger.error('Webhook creation error:', error);
-    res.status(500).json({ error: 'Failed to create webhook' });
+    return res.status(500).json({ error: 'Failed to create webhook' });
+  }
+});
+
+// POST /webhook/send-v2
+router.post('/send-v2', rateLimitMiddleware, verifySignature, async (req: Request, res: Response) => {
+  try {
+    const { webhookUrl, messageData } = req.body;
+
+    if (!webhookUrl || !messageData) {
+      return res.status(400).json({ error: 'webhookUrl and messageData are required' });
+    }
+
+    if (!isValidWebhookUrl(webhookUrl)) {
+      return res.status(400).json({ error: 'Invalid webhook URL format' });
+    }
+
+    // Sanitize message content
+    const sanitizedMessageData = {
+      ...messageData,
+      content: messageData.content ? sanitizeInput(messageData.content) : undefined,
+      username: messageData.username ? sanitizeInput(messageData.username) : undefined
+    };
+
+    // Validate payload size
+    const payloadSize = JSON.stringify(sanitizedMessageData).length;
+    if (payloadSize > env.MAX_WEBHOOK_PAYLOAD_SIZE) {
+      return res.status(413).json({ error: 'Payload too large' });
+    }
+
+    const discordService = new DiscordService();
+    
+    // Build Components v2 payload
+    const webhookPayload: any = {
+      content: sanitizedMessageData.content,
+      username: sanitizedMessageData.username,
+      avatar_url: sanitizedMessageData.avatar_url,
+      embeds: sanitizedMessageData.embeds || []
+    };
+
+    // Add Components v2 containers if provided
+    if (sanitizedMessageData.containers && sanitizedMessageData.containers.length > 0) {
+      webhookPayload.components = sanitizedMessageData.containers.map((container: any) => 
+        discordService.buildContainer(container).toJSON()
+      );
+    }
+
+    // Add traditional components if provided
+    if (sanitizedMessageData.components && sanitizedMessageData.components.length > 0) {
+      if (!webhookPayload.components) webhookPayload.components = [];
+      webhookPayload.components.push(...sanitizedMessageData.components);
+    }
+
+    // Add separators as embeds if provided
+    if (sanitizedMessageData.separators && sanitizedMessageData.separators.length > 0) {
+      if (!webhookPayload.embeds) webhookPayload.embeds = [];
+      webhookPayload.embeds.push(...sanitizedMessageData.separators.map((sep: any) => 
+        discordService.buildSeparator(sep).toJSON()
+      ));
+    }
+
+    // Send webhook with Components v2 support
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(webhookPayload)
+    });
+
+    if (!response.ok) {
+      throw new Error(`Webhook request failed: ${response.statusText}`);
+    }
+
+    logger.info(`Components v2 webhook message sent to ${webhookUrl}`);
+    return res.json({ success: true, message: 'Components v2 webhook sent successfully' });
+
+  } catch (error) {
+    logger.error('Components v2 webhook send error:', error);
+    return res.status(500).json({ error: 'Failed to send Components v2 webhook' });
   }
 });
 
 // GET /webhook/test
 router.get('/test', rateLimitMiddleware, (req: Request, res: Response) => {
-  res.json({ 
+  return res.json({ 
     success: true, 
     message: 'Webhook system is operational',
     timestamp: new Date().toISOString(),
     version: '1.0.0'
+  });
+});
+
+// GET /webhook/test-v2
+router.get('/test-v2', rateLimitMiddleware, (req: Request, res: Response) => {
+  return res.json({ 
+    success: true, 
+    message: 'Components v2 webhook system is operational',
+    timestamp: new Date().toISOString(),
+    version: '2.0.0',
+    features: [
+      'Containers',
+      'Separators', 
+      'Enhanced Text Elements',
+      'Image Elements',
+      'Advanced Buttons',
+      'Select Menus',
+      'Modals'
+    ]
   });
 });
 

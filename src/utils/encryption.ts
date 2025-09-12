@@ -33,7 +33,7 @@ export const encryptSecure = (text: string, key: string = env.ENCRYPTION_KEY): s
     // Combine IV, auth tag, and encrypted data
     return `${iv.toString('hex')}:${authTag.toString('hex')}:${encrypted}`;
   } catch (error) {
-    throw new Error(`Encryption failed: ${error.message}`);
+    throw new Error(`Encryption failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 };
 
@@ -45,9 +45,9 @@ export const decryptSecure = (encryptedText: string, key: string = env.ENCRYPTIO
       throw new Error('Invalid encrypted data format');
     }
     
-    const iv = Buffer.from(parts[0], 'hex');
-    const authTag = Buffer.from(parts[1], 'hex');
-    const encrypted = parts[2];
+    const iv = Buffer.from(parts[0] || '', 'hex');
+    const authTag = Buffer.from(parts[1] || '', 'hex');
+    const encrypted = parts[2] || '';
     
     const decipher = crypto.createDecipher('aes-256-gcm', key);
     decipher.setAuthTag(authTag);
@@ -58,7 +58,7 @@ export const decryptSecure = (encryptedText: string, key: string = env.ENCRYPTIO
     
     return decrypted;
   } catch (error) {
-    throw new Error(`Decryption failed: ${error.message}`);
+    throw new Error(`Decryption failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 };
 

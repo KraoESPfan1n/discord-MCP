@@ -139,7 +139,7 @@ export const validateApiKey = (req: Request, res: Response, next: NextFunction) 
     return res.status(401).json({ error: 'Invalid API key' });
   }
   
-  next();
+  return next();
 };
 
 /**

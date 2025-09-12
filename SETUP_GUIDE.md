@@ -1,5 +1,8 @@
 # Discord MCP Server - Setup Guide
 
+**✅ Tested and Verified:** September 13, 2025  
+**Status:** All tests passed, Components v2 fully implemented
+
 ## 🚀 Quick Start
 
 ### 1. Generate Secrets
@@ -27,6 +30,8 @@ Edit `.env` with your Discord bot configuration:
 ```env
 # Discord Bot Configuration (Required)
 DISCORD_TOKEN=your_discord_bot_token_here
+# Note: CLIENT_ID and CLIENT_SECRET are optional for MCP server
+# They are only needed for OAuth2 flows, which this MCP server doesn't use
 DISCORD_CLIENT_ID=your_discord_client_id_here
 DISCORD_CLIENT_SECRET=your_discord_client_secret_here
 

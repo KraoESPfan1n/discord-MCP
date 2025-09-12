@@ -21,7 +21,7 @@ const verifySignature = (req: Request, res: Response, next: any) => {
     return res.status(401).json({ error: 'Invalid webhook signature' });
   }
 
-  next();
+  return next();
 };
 
 // Middleware for rate limiting
@@ -36,7 +36,7 @@ const rateLimitMiddleware = (req: Request, res: Response, next: any) => {
   }
 
   res.set('X-RateLimit-Remaining', rateLimiter.getRemainingRequests(clientId).toString());
-  next();
+  return next();
 };
 
 // GET /server/info/:guildId
@@ -55,14 +55,14 @@ router.get('/info/:guildId', rateLimitMiddleware, verifySignature, async (req: R
     const discordService = new DiscordService();
     const guildInfo = await discordService.getGuildInfo(guildId);
 
-    res.json({ 
+    return res.json({ 
       success: true, 
       guild: guildInfo
     });
 
   } catch (error) {
     logger.error('Guild info fetch error:', error);
-    res.status(500).json({ error: 'Failed to fetch guild info' });
+    return res.status(500).json({ error: 'Failed to fetch guild info' });
   }
 });
 
@@ -90,7 +90,7 @@ router.post('/setup', rateLimitMiddleware, verifySignature, async (req: Request,
           results.push({ type: 'role', success: true, data: { id: role.id, name: role.name } });
           logger.info(`Setup: Created role ${role.name}`);
         } catch (error) {
-          results.push({ type: 'role', success: false, error: error.message });
+          results.push({ type: 'role', success: false, error: error instanceof Error ? error.message : 'Unknown error' });
           logger.error(`Setup: Failed to create role ${roleConfig.name}:`, error);
         }
       }
@@ -104,7 +104,7 @@ router.post('/setup', rateLimitMiddleware, verifySignature, async (req: Request,
           results.push({ type: 'category', success: true, data: { id: category.id, name: category.name } });
           logger.info(`Setup: Created category ${category.name}`);
         } catch (error) {
-          results.push({ type: 'category', success: false, error: error.message });
+          results.push({ type: 'category', success: false, error: error instanceof Error ? error.message : 'Unknown error' });
           logger.error(`Setup: Failed to create category ${categoryConfig.name}:`, error);
         }
       }
@@ -118,7 +118,7 @@ router.post('/setup', rateLimitMiddleware, verifySignature, async (req: Request,
           results.push({ type: 'channel', success: true, data: { id: channel.id, name: channel.name } });
           logger.info(`Setup: Created channel ${channel.name}`);
         } catch (error) {
-          results.push({ type: 'channel', success: false, error: error.message });
+          results.push({ type: 'channel', success: false, error: error instanceof Error ? error.message : 'Unknown error' });
           logger.error(`Setup: Failed to create channel ${channelConfig.name}:`, error);
         }
       }
@@ -127,7 +127,7 @@ router.post('/setup', rateLimitMiddleware, verifySignature, async (req: Request,
     const successCount = results.filter(r => r.success).length;
     const totalCount = results.length;
 
-    res.json({ 
+    return res.json({ 
       success: true, 
       message: `Server setup completed: ${successCount}/${totalCount} items created`,
       results,
@@ -140,7 +140,7 @@ router.post('/setup', rateLimitMiddleware, verifySignature, async (req: Request,
 
   } catch (error) {
     logger.error('Server setup error:', error);
-    res.status(500).json({ error: 'Failed to setup server' });
+    return res.status(500).json({ error: 'Failed to setup server' });
   }
 });
 
@@ -150,7 +150,7 @@ router.get('/status', rateLimitMiddleware, (req: Request, res: Response) => {
     const discordService = new DiscordService();
     const isConnected = discordService.isConnected();
 
-    res.json({
+    return res.json({
       success: true,
       status: {
         discord: isConnected ? 'connected' : 'disconnected',
@@ -171,7 +171,7 @@ router.get('/status', rateLimitMiddleware, (req: Request, res: Response) => {
 
   } catch (error) {
     logger.error('Status check error:', error);
-    res.status(500).json({ error: 'Failed to get server status' });
+    return res.status(500).json({ error: 'Failed to get server status' });
   }
 });
 
@@ -210,7 +210,7 @@ router.post('/config', rateLimitMiddleware, verifySignature, async (req: Request
         return res.status(400).json({ error: 'Invalid action specified' });
     }
 
-    res.json({ 
+    return res.json({ 
       success: true, 
       action,
       data: result
@@ -218,7 +218,7 @@ router.post('/config', rateLimitMiddleware, verifySignature, async (req: Request
 
   } catch (error) {
     logger.error('Server config error:', error);
-    res.status(500).json({ error: 'Failed to execute server config action' });
+    return res.status(500).json({ error: 'Failed to execute server config action' });
   }
 });
 

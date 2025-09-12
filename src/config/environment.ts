@@ -8,8 +8,8 @@ dotenv.config();
 const envSchema = z.object({
   // Discord Configuration
   DISCORD_TOKEN: z.string().min(1, 'Discord token is required'),
-  DISCORD_CLIENT_ID: z.string().min(1, 'Discord client ID is required'),
-  DISCORD_CLIENT_SECRET: z.string().min(1, 'Discord client secret is required'),
+  DISCORD_CLIENT_ID: z.string().optional(),
+  DISCORD_CLIENT_SECRET: z.string().optional(),
   
   // Server Configuration
   PORT: z.string().transform(Number).default('3000'),
@@ -29,10 +29,6 @@ const envSchema = z.object({
   LOG_LEVEL: z.enum(['error', 'warn', 'info', 'debug']).default('info'),
   LOG_FILE_PATH: z.string().default('./logs/discord-mcp.log'),
   
-  // Discord Server Defaults
-  DEFAULT_GUILD_ID: z.string().optional(),
-  ADMIN_ROLE_ID: z.string().optional(),
-  MODERATOR_ROLE_ID: z.string().optional(),
   
   // Webhook Configuration
   WEBHOOK_TIMEOUT: z.string().transform(Number).default('30000'),
@@ -43,6 +39,7 @@ const envSchema = z.object({
   ENABLE_ROLE_MANAGEMENT: z.string().transform(val => val === 'true').default('true'),
   ENABLE_WEBHOOK_SYSTEM: z.string().transform(val => val === 'true').default('true'),
   ENABLE_SERVER_CONFIG: z.string().transform(val => val === 'true').default('true'),
+  ENABLE_COMPONENTS_V2: z.string().transform(val => val === 'true').default('true'),
 });
 
 // Validate and parse environment variables
