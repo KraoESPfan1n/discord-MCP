@@ -1,26 +1,43 @@
 {
   "name": "discord-mcp",
   "version": "1.0.0",
-  "description": "Base MCP server",
+  "description": "Discord MCP server with webhook support and server management",
   "main": "dist/server.js",
   "scripts": {
     "build": "tsc",
     "start": "node dist/server.js",
     "dev": "nodemon --watch src --exec ts-node src/server.ts",
+    "pm2:start": "pm2 start ecosystem.config.js --env production",
+    "pm2:dev": "pm2 start ecosystem.config.js --env development",
+    "pm2:stop": "pm2 stop discord-mcp",
+    "pm2:restart": "pm2 restart discord-mcp",
+    "pm2:logs": "pm2 logs discord-mcp",
+    "pm2:monit": "pm2 monit",
     "test": "echo \"No tests\""
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["discord", "mcp", "webhook", "bot", "server-management"],
+  "author": "KraoESPfan1n",
+  "license": "MIT",
   "type": "commonjs",
   "dependencies": {
-    "express": "^5.1.0"
+    "discord.js": "^14.14.1",
+    "express": "^4.19.2",
+    "helmet": "^7.1.0",
+    "cors": "^2.8.5",
+    "express-rate-limit": "^7.1.5",
+    "dotenv": "^16.3.1",
+    "axios": "^1.6.5",
+    "winston": "^3.11.0",
+    "zod": "^3.22.4",
+    "bcrypt": "^5.1.1",
+    "express-validator": "^7.0.1"
   },
   "devDependencies": {
-    "@types/express": "^5.0.3",
-    "@types/node": "^24.3.2",
-    "nodemon": "^3.1.10",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.10.6",
+    "@types/cors": "^2.8.17",
+    "nodemon": "^3.0.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.2"
+    "typescript": "^5.3.3"
   }
 }
