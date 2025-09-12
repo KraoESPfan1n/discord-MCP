@@ -151,7 +151,9 @@ async function updateRole(id: string, params: {
   const guild = await resolveGuild(params.guildId);
   const role = await guild.roles.fetch(id);
   if (!role) throw new Error('role not found');
-  await role.edit({ name: params.name });
+  const editData: any = {};
+  if (typeof params.name === 'string') editData.name = params.name;
+  if (Object.keys(editData).length) await role.edit(editData);
   if (params.position !== undefined) await role.setPosition(params.position);
   return { id: role.id, name: role.name };
 }
