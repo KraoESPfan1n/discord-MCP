@@ -17,7 +17,7 @@ const defaultGuildId = process.env.DISCORD_GUILD_ID;
 const encryptionKey =
   process.env.ENCRYPTION_KEY || crypto.randomBytes(32).toString('hex');
 if (!process.env.ENCRYPTION_KEY) {
-  console.warn(`Generated encryption key: ${encryptionKey}`);
+  console.warn('No ENCRYPTION_KEY provided; generated a temporary key for this process.');
 }
 
 let client: Client | null = null;
