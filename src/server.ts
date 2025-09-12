@@ -71,9 +71,11 @@ async function updateChannel(id: string, params: {
   const guild = await resolveGuild(params.guildId);
   const channel = await guild.channels.fetch(id);
   if (!channel) throw new Error('channel not found');
-  await channel.edit({ name: params.name, parent: params.parentId });
-  if (params.position !== undefined)
-    await (channel as any).setPosition(params.position);
+  const editData: any = {};
+  if (typeof params.name === 'string') editData.name = params.name;
+  if (typeof params.parentId === 'string') editData.parent = params.parentId;
+  if (Object.keys(editData).length) await (channel as any).edit(editData);
+  if (params.position !== undefined) await (channel as any).setPosition(params.position);
   return { id: channel.id, name: channel.name };
 }
 
