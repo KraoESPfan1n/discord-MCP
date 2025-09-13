@@ -169,10 +169,117 @@ npm test
 
 ## 📖 Documentation
 
-- [Components v2 Guide](./COMPONENTS_V2_GUIDE.md) - Complete Components v2 documentation
-- [Security Setup](./SETUP_SECRETS.md) - How to generate and configure secrets
-- [Deployment Guide](./DEPLOYMENT_SECURE.md) - Production deployment instructions
-- [Test Results](./TEST_RESULTS.md) - Comprehensive test results
+This project includes comprehensive documentation organized in the `docs/` folder. Each document serves a specific purpose in helping you understand, set up, and use the Discord MCP Server effectively.
+
+### 📚 Documentation Overview
+
+| Document | Purpose | Audience | Key Topics |
+|----------|---------|----------|------------|
+| **[Components v2 Guide](./docs/COMPONENTS_V2_GUIDE.md)** | Complete Components v2 implementation guide | Developers, Bot Creators | Containers, Separators, Text Elements, Buttons, Modals, API Examples |
+| **[Security Setup](./docs/SETUP_SECRETS.md)** | Step-by-step secret generation and configuration | All Users | Secret generation, .env configuration, security best practices |
+| **[Deployment Guide](./docs/DEPLOYMENT_SECURE.md)** | Production deployment with enterprise security | DevOps, System Admins | Nginx setup, SSL/TLS, PM2, monitoring, backup strategies |
+| **[Security Summary](./docs/SECURITY_SUMMARY.md)** | Comprehensive security analysis and confidence level | Security Teams, Admins | Security layers, attack mitigation, monitoring, incident response |
+| **[Setup Guide](./docs/SETUP_GUIDE.md)** | Quick start and basic configuration | New Users | Installation, Discord bot setup, basic usage examples |
+| **[Test Report](./docs/TEST_REPORT.md)** | Detailed test results and verification | QA, Developers | Test coverage, performance metrics, security verification |
+| **[Test Results](./docs/TEST_RESULTS.md)** | Comprehensive test execution summary | QA, Developers | Test execution details, issues fixed, recommendations |
+| **[Implementation Summary](./docs/IMPLEMENTATION_SUMMARY.md)** | Project completion status and achievements | Project Managers, Stakeholders | Feature delivery, technical implementation, next steps |
+| **[Cleanup Summary](./docs/CLEANUP_SUMMARY.md)** | Configuration cleanup and optimization | Developers, Maintainers | Removed configurations, optimization results, impact analysis |
+
+### 🎯 Quick Documentation Navigation
+
+**For New Users:**
+1. Start with [Setup Guide](./docs/SETUP_GUIDE.md) for basic installation
+2. Follow [Security Setup](./docs/SETUP_SECRETS.md) for proper configuration
+3. Check [Test Results](./docs/TEST_RESULTS.md) to verify everything works
+
+**For Developers:**
+1. Read [Components v2 Guide](./docs/COMPONENTS_V2_GUIDE.md) for advanced features
+2. Review [Implementation Summary](./docs/IMPLEMENTATION_SUMMARY.md) for technical details
+3. Check [Test Report](./docs/TEST_REPORT.md) for comprehensive testing info
+
+**For Production Deployment:**
+1. Follow [Deployment Guide](./docs/DEPLOYMENT_SECURE.md) for secure setup
+2. Review [Security Summary](./docs/SECURITY_SUMMARY.md) for security confidence
+3. Use [Cleanup Summary](./docs/CLEANUP_SUMMARY.md) for optimization tips
+
+**For Security Teams:**
+1. Start with [Security Summary](./docs/SECURITY_SUMMARY.md) for security overview
+2. Review [Deployment Guide](./docs/DEPLOYMENT_SECURE.md) for production security
+3. Check [Test Report](./docs/TEST_REPORT.md) for security verification results
+
+### 📋 Documentation Details
+
+#### 🔧 **Components v2 Guide** (`docs/COMPONENTS_V2_GUIDE.md`)
+- **What it covers:** Complete implementation of Discord's Components v2 system
+- **Key features:** Containers, Separators, Text Elements, Image Elements, Buttons, Select Menus, Modals
+- **API endpoints:** 8 Components v2 endpoints with examples
+- **Use cases:** Interactive Discord messages, forms, advanced UI components
+- **Target audience:** Developers building Discord bots with modern UI
+
+#### 🔐 **Security Setup** (`docs/SETUP_SECRETS.md`)
+- **What it covers:** Step-by-step secret generation and configuration
+- **Key topics:** WEBHOOK_SECRET, API_KEY, ENCRYPTION_KEY generation
+- **Security practices:** Best practices for secret management
+- **Troubleshooting:** Common issues and solutions
+- **Target audience:** All users setting up the server
+
+#### 🚀 **Deployment Guide** (`docs/DEPLOYMENT_SECURE.md`)
+- **What it covers:** Enterprise-grade production deployment
+- **Key topics:** Nginx reverse proxy, SSL/TLS, PM2, monitoring, backup
+- **Security features:** Firewall, Fail2Ban, security headers
+- **Monitoring:** Health checks, log rotation, automated monitoring
+- **Target audience:** DevOps engineers, system administrators
+
+#### 🛡️ **Security Summary** (`docs/SECURITY_SUMMARY.md`)
+- **What it covers:** Comprehensive security analysis and confidence assessment
+- **Security layers:** 5 layers of protection with detailed explanations
+- **Attack mitigation:** How various attack vectors are prevented
+- **Confidence level:** 95% security confidence with detailed breakdown
+- **Target audience:** Security teams, compliance officers
+
+#### ⚙️ **Setup Guide** (`docs/SETUP_GUIDE.md`)
+- **What it covers:** Quick start and basic configuration
+- **Key topics:** Installation, Discord bot setup, basic API usage
+- **Examples:** Real-world usage examples with curl commands
+- **Troubleshooting:** Common issues and solutions
+- **Target audience:** New users, developers getting started
+
+#### 🧪 **Test Report** (`docs/TEST_REPORT.md`)
+- **What it covers:** Detailed test results and verification
+- **Test coverage:** 100% coverage across all major components
+- **Performance metrics:** Response times, memory usage, error handling
+- **Security verification:** All security features tested and verified
+- **Target audience:** QA teams, developers, project managers
+
+#### 📊 **Test Results** (`docs/TEST_RESULTS.md`)
+- **What it covers:** Comprehensive test execution summary
+- **Test execution:** 8/8 tests passed with detailed results
+- **Issues fixed:** Problems encountered and resolved during testing
+- **Recommendations:** Next steps for production and development
+- **Target audience:** QA teams, developers, stakeholders
+
+#### 🎯 **Implementation Summary** (`docs/IMPLEMENTATION_SUMMARY.md`)
+- **What it covers:** Project completion status and achievements
+- **Feature delivery:** Complete Components v2 implementation
+- **Technical details:** Architecture, code changes, key features
+- **Next steps:** Production deployment and development guidance
+- **Target audience:** Project managers, stakeholders, technical leads
+
+#### 🧹 **Cleanup Summary** (`docs/CLEANUP_SUMMARY.md`)
+- **What it covers:** Configuration cleanup and optimization
+- **Removed items:** Unnecessary environment variables and configurations
+- **Impact analysis:** No functionality lost, cleaner configuration
+- **Optimization results:** Easier setup and better maintainability
+- **Target audience:** Developers, maintainers, system administrators
+
+### 🔍 **Finding What You Need**
+
+**Need to set up the server?** → Start with [Setup Guide](./docs/SETUP_GUIDE.md)
+**Want to use Components v2?** → Read [Components v2 Guide](./docs/COMPONENTS_V2_GUIDE.md)
+**Deploying to production?** → Follow [Deployment Guide](./docs/DEPLOYMENT_SECURE.md)
+**Security concerns?** → Check [Security Summary](./docs/SECURITY_SUMMARY.md)
+**Having issues?** → Review [Test Results](./docs/TEST_RESULTS.md) and [Test Report](./docs/TEST_REPORT.md)
+**Want to understand the project?** → Read [Implementation Summary](./docs/IMPLEMENTATION_SUMMARY.md)
 
 ## 🏗️ Development
 
