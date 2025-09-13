@@ -16,10 +16,19 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('production'),
   HOST: z.string().default('0.0.0.0'),
   
-  // Security Configuration
-  WEBHOOK_SECRET: z.string().min(32, 'Webhook secret must be at least 32 characters'),
-  API_KEY: z.string().min(16, 'API key must be at least 16 characters'),
-  ENCRYPTION_KEY: z.string().length(32, 'Encryption key must be exactly 32 characters'),
+  // Security Configuration - Allow placeholder values in development
+  WEBHOOK_SECRET: z.string().refine((val) => {
+    if (process.env.NODE_ENV === 'development' && val.includes('your_')) return true;
+    return val.length >= 32;
+  }, 'Webhook secret must be at least 32 characters'),
+  API_KEY: z.string().refine((val) => {
+    if (process.env.NODE_ENV === 'development' && val.includes('your_')) return true;
+    return val.length >= 16;
+  }, 'API key must be at least 16 characters'),
+  ENCRYPTION_KEY: z.string().refine((val) => {
+    if (process.env.NODE_ENV === 'development' && val.includes('your_')) return true;
+    return val.length === 32;
+  }, 'Encryption key must be exactly 32 characters'),
   
   // Rate Limiting
   RATE_LIMIT_WINDOW_MS: z.string().transform(Number).default('900000'),
